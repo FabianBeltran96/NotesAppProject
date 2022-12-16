@@ -64,9 +64,9 @@ onMounted(refreshNotes);
           cols="30"
           rows="10"
         ></textarea>
-
         <p v-if="errorMessage">{{ errorMessage }}</p>
         <button @click="addNote">Add Note</button>
+        <button @click="showModal = false">Close</button>
       </div>
     </div>
     <div class="container">
