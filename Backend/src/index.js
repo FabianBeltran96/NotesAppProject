@@ -5,7 +5,6 @@ import cors from "cors";
 import app from "./app.js";
 
 async function main() {
-  //cors
   app.use(cors());
   app.use(productsRoutes);
   app.listen(PORT, () => {

@@ -1,18 +1,17 @@
 <script setup>
 import { reactive, ref, onMounted } from "vue";
 import axios from "axios";
+import Card from "./components/Card.vue";
+
 const showModal = ref(false);
+const notes = ref([]);
 const newNote = reactive({ title: "", content: "", priority: 1 });
 const errorMessage = ref("");
-
-const notes = ref([]);
 
 const refreshNotes = () => {
   axios
     .get("http://localhost:3000/notes")
-    .then((res) => {
-      notes.value = res.data;
-    })
+    .then((res) => (notes.value = res.data))
     .catch((err) => console.log(err));
 };
 
@@ -39,9 +38,9 @@ const addNote = () => {
 };
 
 const deleteNote = (id) => {
-  console.log(id);
+  console.log(id, "id");
   axios
-    .delete("http://localhost:3000/notes/" + id)
+    .delete(`http://localhost:3000/notes/${id}`)
     .then((res) => refreshNotes())
     .catch((err) => console.log(err));
 };
@@ -55,7 +54,7 @@ onMounted(refreshNotes);
       <div class="modal">
         <div class="inputs">
           <input class="title" v-model="newNote.title" type="text" />
-          <input class="priority" v-model="newNote.priority" type="text" />
+          <input class="priority" v-model="newNote.priority" type="number" />
         </div>
         <textarea
           v-model.trim="newNote.content"
@@ -66,24 +65,20 @@ onMounted(refreshNotes);
         ></textarea>
         <p v-if="errorMessage">{{ errorMessage }}</p>
         <button @click="addNote">Add Note</button>
-        <button @click="showModal = false">Close</button>
       </div>
     </div>
-    <div class="container">
+    <div class="container p-3 bg-slate-100">
       <header>
         <h1>Notes</h1>
         <button @click="showModal = true">+</button>
       </header>
       <div class="cards-container">
-        <div class="card" v-for="(note, index) in notes" :key="index">
-          <h2>{{ note.title }}</h2>
-          <p class="main-text">{{ note.content }}</p>
-          <div class="card-footer">
-            <p>{{ note.id }}</p>
-            <p class="date">{{}}</p>
-            <i @click="deleteNote(note.id)">X</i>
-          </div>
-        </div>
+        <Card
+          @delete-note="deleteNote"
+          v-for="(note, index) in notes"
+          :key="index"
+          :note="note"
+        />
       </div>
     </div>
   </main>
@@ -91,14 +86,13 @@ onMounted(refreshNotes);
 
 <style scoped>
 main {
-  height: 100vh;
   width: 100vw;
+  height: 100vh;
 }
 
 .container {
-  max-width: 1000px;
-  padding: 10px;
   margin: 0 auto;
+  height: 100%;
 }
 
 header {
@@ -124,43 +118,9 @@ header button {
   color: white;
   font-size: 20px;
 }
-
-.card {
-  width: 225px;
-  height: 225px;
-  background-color: rgb(237, 182, 44);
-  padding: 10px;
-  border-radius: 15px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  margin-right: 20px;
-  margin-bottom: 20px;
-}
-
-.date {
-  font-size: 12.5px;
-  font-weight: bold;
-}
-
 .cards-container {
   display: flex;
   flex-wrap: wrap;
-}
-
-.card-footer {
-  display: flex;
-  justify-content: space-around;
-  align-content: center;
-}
-
-.card-footer i {
-  cursor: pointer;
-  background: aliceblue;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  text-align: center;
 }
 
 .overlay {

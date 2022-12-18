@@ -28,7 +28,6 @@ export const createNote = async (req, res) => {
 
 export const deleteNote = async (req, res) => {
   try {
-    console.log(req.params);
     const deleteUser = await db.note.delete({
       where: { id: parseInt(req.params.id) },
     });
