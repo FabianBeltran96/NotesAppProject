@@ -1,24 +1,26 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import axios from "axios";
 import Card from "./components/Card.vue";
 import NewNote from "./components/newNote.vue";
 
 const showModal = ref(false);
 const showSidebar = ref(false);
-const pickedFilter = ref("noFilter");
+const pickedFilter = ref("0");
 const pickedSort = ref("noSort");
 const notes = ref([]);
+
+const listNotes = computed(() =>
+  notes.value.filter(
+    (note) => pickedFilter.value == 0 || pickedFilter.value == note.priority
+  )
+);
 
 const refreshNotes = () => {
   axios
     .get("http://localhost:3000/notes")
     .then((res) => (notes.value = res.data))
     .catch((err) => console.log(err));
-};
-
-const filterNotes = () => {
-  console.log(pickedFilter.value);
 };
 
 const sortNotes = () => {
@@ -42,36 +44,49 @@ onMounted(refreshNotes);
       v-if="showSidebar"
     >
       <div class="mx-auto my-4">
-        <div class="flex">
-          <p class="w-56 text-lg font-bold">Filtrar por prioridades</p>
-          <input
-            type="radio"
-            v-model="pickedFilter"
-            @change="filterNotes()"
-            name="filter"
-            value="filterPriority"
-            id="filterPriority"
-          />
+        <div class="flex flex-col">
+          <p class="w-56 text-xl font-bold">Filtrar por prioridades</p>
+          <div class="flex justify-between">
+            <div class="flex">
+              <p class="w-4 text-sm font-bold">1</p>
+              <input
+                type="radio"
+                v-model.number="pickedFilter"
+                name="filter"
+                value="1"
+                id="priority1"
+              />
+            </div>
+            <div class="flex">
+              <p class="w-4 text-sm font-bold">2</p>
+              <input
+                type="radio"
+                v-model.number="pickedFilter"
+                name="filter"
+                value="2"
+                id="priority2"
+              />
+            </div>
+            <div class="flex">
+              <p class="w-4 text-sm font-bold">3</p>
+              <input
+                type="radio"
+                v-model.number="pickedFilter"
+                name="filter"
+                value="3"
+                id="priority3"
+              />
+            </div>
+          </div>
         </div>
-        <div class="flex">
-          <p class="w-56 text-lg font-bold">Filtrar por semanas</p>
-          <input
-            type="radio"
-            v-model="pickedFilter"
-            @change="filterNotes()"
-            name="filter"
-            value="filterWeekly"
-            id="filterWeekly"
-          />
-        </div>
+
         <div class="flex">
           <p class="w-56 text-lg font-bold">Sin filtros</p>
           <input
             type="radio"
-            v-model="pickedFilter"
-            @change="filterNotes()"
+            v-model.number="pickedFilter"
             name="filter"
-            value="noFilter"
+            value="0"
             id="noFilter"
           />
         </div>
@@ -121,7 +136,7 @@ onMounted(refreshNotes);
       <div class="cards-container overflow-auto">
         <Card
           @refresh-notes="refreshNotes"
-          v-for="(note, index) in notes"
+          v-for="(note, index) in listNotes"
           :key="index"
           :note="note"
         />
@@ -162,7 +177,7 @@ header button {
 }
 
 aside {
-  width: 360px;
+  width: 400px;
 }
 
 .overlay {
