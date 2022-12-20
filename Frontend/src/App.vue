@@ -1,20 +1,50 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import axios from "axios";
 import Card from "./components/Card.vue";
 import NewNote from "./components/newNote.vue";
 
 const showModal = ref(false);
 const showSidebar = ref(false);
-const pickedFilter = ref("0");
+
+const pickedFilter = ref([]);
 const pickedSort = ref("noSort");
+
 const notes = ref([]);
 
-const listNotes = computed(() =>
-  notes.value.filter(
-    (note) => pickedFilter.value == 0 || pickedFilter.value == note.priority
-  )
-);
+watch(pickedFilter, (newValue, oldValue) => {
+  if (newValue.length === 3) {
+    pickedFilter.value = [];
+  }
+});
+
+const listNotes = computed(() => {
+  if (pickedSort.value === "sortPriority") {
+    return notes.value
+      .filter(
+        (note) =>
+          pickedFilter.value == 0 ||
+          pickedFilter.value.includes(note.priority.toString())
+      )
+      .sort((a, b) => (a.priority > b.priority ? 1 : -1));
+  }
+  if (pickedSort.value === "sortWeekly") {
+    return notes.value
+      .filter(
+        (note) =>
+          pickedFilter.value == 0 ||
+          pickedFilter.value.includes(note.priority.toString())
+      )
+      .sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1));
+  }
+  if (pickedSort.value === "noSort") {
+    return notes.value.filter(
+      (note) =>
+        pickedFilter.value == 0 ||
+        pickedFilter.value.includes(note.priority.toString())
+    );
+  }
+});
 
 const refreshNotes = () => {
   axios
@@ -23,9 +53,7 @@ const refreshNotes = () => {
     .catch((err) => console.log(err));
 };
 
-const sortNotes = () => {
-  console.log(pickedSort.value);
-};
+const sortNotes = () => console.log(pickedSort.value);
 
 const closeModal = () => (showModal.value = false);
 
@@ -50,7 +78,7 @@ onMounted(refreshNotes);
             <div class="flex">
               <p class="w-4 text-sm font-bold">1</p>
               <input
-                type="radio"
+                type="checkbox"
                 v-model.number="pickedFilter"
                 name="filter"
                 value="1"
@@ -60,7 +88,7 @@ onMounted(refreshNotes);
             <div class="flex">
               <p class="w-4 text-sm font-bold">2</p>
               <input
-                type="radio"
+                type="checkbox"
                 v-model.number="pickedFilter"
                 name="filter"
                 value="2"
@@ -70,7 +98,7 @@ onMounted(refreshNotes);
             <div class="flex">
               <p class="w-4 text-sm font-bold">3</p>
               <input
-                type="radio"
+                type="checkbox"
                 v-model.number="pickedFilter"
                 name="filter"
                 value="3"
@@ -78,17 +106,6 @@ onMounted(refreshNotes);
               />
             </div>
           </div>
-        </div>
-
-        <div class="flex">
-          <p class="w-56 text-lg font-bold">Sin filtros</p>
-          <input
-            type="radio"
-            v-model.number="pickedFilter"
-            name="filter"
-            value="0"
-            id="noFilter"
-          />
         </div>
       </div>
       <div class="mx-auto my-4">
