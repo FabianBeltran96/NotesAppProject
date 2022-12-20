@@ -1,11 +1,11 @@
 <script setup>
 import axios from "axios";
-import { computed, onMounted } from "vue";
+import { computed } from "vue";
 
 const priorityColor = computed(() => {
-  if (props.note.priority === 1) return `bg-green-300`;
-  if (props.note.priority === 2) return `bg-orange-300`;
-  if (props.note.priority === 3) return `bg-red-300`;
+  if (props.note.priority === 1) return `bg-green-400`;
+  if (props.note.priority === 2) return `bg-orange-400`;
+  if (props.note.priority === 3) return `bg-red-400`;
 });
 
 const emit = defineEmits(["refreshNotes"]);
