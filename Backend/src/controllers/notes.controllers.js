@@ -1,4 +1,5 @@
 import { db } from "../db.js";
+import { parseId } from "../utils/parseId.js";
 
 export const getNotes = async (req, res) => {
   try {
@@ -20,6 +21,25 @@ export const createNote = async (req, res) => {
       },
     });
     res.send(newNote);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updateNote = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const idParsed = parseId(id);
+
+    if (idParsed instanceof Error) res.status(400).json(idParsed.message);
+    
+    const noteUpdated = await db.note.update({
+      where: { id: idParsed },
+      data: {
+        ...req.body,
+      },
+    });
+    res.send(noteUpdated);
   } catch (error) {
     console.log(error);
   }
