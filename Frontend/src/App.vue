@@ -121,7 +121,7 @@ onMounted(refreshNotes);
           />
         </div>
         <div class="flex">
-          <p class="w-56 text-lg font-bold">Ordenar por semanas</p>
+          <p class="w-56 text-lg font-bold">Ordenar por fecha</p>
           <input
             type="radio"
             v-model="pickedSort"

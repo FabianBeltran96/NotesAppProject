@@ -2,7 +2,6 @@ import { db } from "../db.js";
 
 export const getNotes = async (req, res) => {
   try {
-    //throw new Error('This is my own error');
     const notes = await db.note.findMany();
     res.json(notes);
   } catch (error) {
