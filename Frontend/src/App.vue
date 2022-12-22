@@ -150,7 +150,7 @@ onMounted(refreshNotes);
         <h1>Notes</h1>
         <button @click="showModal = true">+</button>
       </header>
-      <div class="cards-container overflow-auto">
+      <div class="cards-container flex justify-center overflow-auto">
         <Card
           @refresh-notes="refreshNotes"
           v-for="(note, index) in listNotes"
